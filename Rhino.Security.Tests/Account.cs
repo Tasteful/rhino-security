@@ -2,7 +2,7 @@ namespace Rhino.Security.Tests
 {
     using System;
 
-    public class Account
+    public class Account : ISecurityKey
     {
         public Account()
         {

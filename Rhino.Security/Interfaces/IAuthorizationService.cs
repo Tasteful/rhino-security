@@ -1,3 +1,4 @@
+using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
 using Rhino.Security.Model;
@@ -36,6 +37,14 @@ namespace Rhino.Security.Interfaces
 		/// <param name = "operation">The operation.</param>
 		void AddPermissionsToQuery(IUser user, string operation, DetachedCriteria criteria);
 
+		/// <summary>
+		/// 	Adds the permissions to the linq query.
+		/// </summary>
+		/// <param name = "user">The user.</param>
+		/// <param name = "queryable">The query.</param>
+		/// <param name = "operation">The operation.</param>
+		IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : ISecurityKey;
+		
 		///<summary>
 		///	Adds the permissions to the criteria query for the given usersgroup
 		///</summary>
@@ -44,6 +53,15 @@ namespace Rhino.Security.Interfaces
 		///<param name = "operation">The operation</param>
 		///<param name = "criteria">The criteria</param>
 		void AddPermissionsToQuery(UsersGroup usersgroup, string operation, DetachedCriteria criteria);
+
+		///<summary>
+		///	Adds the permissions to the linq query for the given usersgroup
+		///</summary>
+		///<param name = "usersgroup">The usersgroup. Only permissions directly related to this usergroup
+		///	are taken into account</param>
+		///<param name = "operation">The operation</param>
+		///<param name = "queryable">The query</param>
+		IQueryable<T> AddPermissionsToQuery<T>(UsersGroup usersgroup, string operation, IQueryable<T> queryable) where T : ISecurityKey;
 
 		/// <summary>
 		/// 	Determines whether the specified user is allowed to perform the specified 

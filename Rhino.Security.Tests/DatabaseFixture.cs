@@ -1,5 +1,6 @@
 using System;
 using System.Data.SQLite;
+using HibernatingRhinos.Profiler.Appender.NHibernate;
 using Microsoft.Practices.ServiceLocation;
 using NHibernate;
 using NHibernate.Cache;
@@ -45,6 +46,7 @@ namespace Rhino.Security.Tests
 				.SetProperty(Environment.ReleaseConnections, "on_close")
 				.SetProperty(Environment.UseSecondLevelCache, "true")
 				.SetProperty(Environment.UseQueryCache, "true")
+				//.SetProperty(Environment.ShowSql, "true")
 				.SetProperty(Environment.CacheProvider, typeof (HashtableCacheProvider).AssemblyQualifiedName)
 				.AddAssembly(typeof (User).Assembly);
 
@@ -54,7 +56,7 @@ namespace Rhino.Security.Tests
 
 			session = factory.OpenSession();
 
-			new SchemaExport(cfg).Execute(true, true, false, session.Connection, null);
+			new SchemaExport(cfg).Execute(false, true, false, session.Connection, null);
 
 			session.BeginTransaction();
 
@@ -81,6 +83,7 @@ namespace Rhino.Security.Tests
 
 		protected virtual void BeforeSetup()
 		{
+			NHibernateProfiler.Initialize();
 		}
 
 		private void SetupEntities()

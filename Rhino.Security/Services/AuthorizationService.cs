@@ -1,6 +1,9 @@
 using System;
+using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Engine;
+using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using Rhino.Security.Impl.Util;
 using Rhino.Security.Interfaces;
@@ -16,19 +19,23 @@ namespace Rhino.Security.Services
 	public class AuthorizationService : IAuthorizationService
 	{
 		private readonly IAuthorizationRepository authorizationRepository;
+		private readonly ISession _session;
 
 		private readonly IPermissionsService permissionsService;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthorizationService"/> class.
+		/// Initializes a new instance of the <see cref="AuthorizationService" /> class.
 		/// </summary>
 		/// <param name="permissionsService">The permissions service.</param>
 		/// <param name="authorizationRepository">The authorization editing service.</param>
+		/// <param name="session">The session.</param>
 		public AuthorizationService(IPermissionsService permissionsService,
-		                            IAuthorizationRepository authorizationRepository)
+		                            IAuthorizationRepository authorizationRepository,
+									ISession session)
 		{
 			this.permissionsService = permissionsService;
 			this.authorizationRepository = authorizationRepository;
+			_session = session;
 		}
 
 		#region IAuthorizationService Members
@@ -70,7 +77,42 @@ namespace Rhino.Security.Services
 			criteria.Add(allowed);
 		}
 
-        ///<summary>Adds the permissions to the criteria query for the given usersgroup
+		/// <summary>
+		/// 	Adds the permissions to the linq query.
+		/// </summary>
+		/// <param name = "user">The user.</param>
+		/// <param name = "queryable">The query.</param>
+		/// <param name = "operation">The operation.</param>
+		public IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : ISecurityKey
+		{
+			var groups = authorizationRepository.GetAssociatedUsersGroupFor(user);
+			string[] operationNames = Strings.GetHierarchicalOperationNames(operation);
+
+			return queryable.Where(entity =>
+								_session.Query<Permission>()
+								.Where(permission =>
+									   operationNames.Contains(permission.Operation.Name)
+									   && (
+											permission.User == user
+											|| groups.Contains(permission.UsersGroup)
+									   )
+									   && (
+											permission.EntitySecurityKey == entity.SecurityKey
+											|| permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey == entity.SecurityKey)
+											|| (
+												permission.EntitiesGroup == null
+												&& permission.EntitySecurityKey == null
+											   )
+										  )
+								)
+								.OrderByDescending(permission => permission.Level)
+								.ThenBy(permission => permission.Allow)
+								.Select(permission => permission.Allow)
+								.FirstOrDefault() == true
+				);
+		}
+
+		///<summary>Adds the permissions to the criteria query for the given usersgroup
         ///</summary>
         ///<param name="usersgroup">The usersgroup. Only permissions directly related to this usergroup
         /// are taken into account</param>
@@ -80,9 +122,40 @@ namespace Rhino.Security.Services
         {            
             ICriterion allowed = GetPermissionQueryInternal(usersgroup, operation, GetSecurityKeyProperty(criteria));
             criteria.Add(allowed);
-        }	    
+        }
 
-	    /// <summary>
+		///<summary>
+		///	Adds the permissions to the linq query for the given usersgroup
+		///</summary>
+		///<param name = "usersgroup">The usersgroup. Only permissions directly related to this usergroup
+		///	are taken into account</param>
+		///<param name = "operation">The operation</param>
+		///<param name = "queryable">The query</param>
+		public IQueryable<T> AddPermissionsToQuery<T>(UsersGroup usersgroup, string operation, IQueryable<T> queryable) where T : ISecurityKey
+		{
+			string[] operationNames = Strings.GetHierarchicalOperationNames(operation);
+			return queryable.Where(entity =>
+								_session.Query<Permission>()
+								.Where(permission =>
+									   operationNames.Contains(permission.Operation.Name)
+									   && permission.UsersGroup == usersgroup
+									   && (
+											permission.EntitySecurityKey == entity.SecurityKey
+											|| permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey == entity.SecurityKey)
+											|| (
+												permission.EntitiesGroup == null
+												&& permission.EntitySecurityKey == null
+											   )
+										  )
+								)
+								.OrderByDescending(permission => permission.Level)
+								.ThenBy(permission => permission.Allow)
+								.Select(permission => permission.Allow)
+								.FirstOrDefault() == true
+				);
+		}
+
+		/// <summary>
 		/// Determines whether the specified user is allowed to perform the specified
 		/// operation on the entity
 		/// </summary>
@@ -218,7 +291,6 @@ namespace Rhino.Security.Services
             Type rootType = criteria.GetRootEntityTypeIfAvailable();
             return criteria.Alias + "." + Security.GetSecurityKeyProperty(rootType);
         }
-
 
 		private void AddPermissionDescriptionToAuthorizationInformation<TEntity>(string operation,
 		                                                                         AuthorizationInformation info,
