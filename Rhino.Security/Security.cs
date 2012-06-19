@@ -34,6 +34,14 @@ namespace Rhino.Security
 			where TEntity : class
 		{
 			Guard.Against<ArgumentNullException>(entity == null, "entity");
+
+			// Entity is implementing the ISecurityKey interface and the key can be taken from this.
+			var asSecurityKey = entity as ISecurityKey;
+			if (asSecurityKey != null)
+			{
+				return asSecurityKey.SecurityKey;
+			}
+
 			var extractor = ServiceLocator.Current.GetInstance<IEntityInformationExtractor<TEntity>>();
 			return extractor.GetSecurityKeyFor(entity);
 		}
@@ -51,6 +59,13 @@ namespace Rhino.Security
 			Guard.Against<ArgumentNullException>(entity == null, "entity");
 			Type[] entityType = { entity.GetType() };
 			Guard.Against<ArgumentException>(!entityType[0].IsClass, "Entity must be a class object");
+
+			// Entity is implementing the ISecurityKey interface and the key can be taken from this.
+			var asSecurityKey = entity as ISecurityKey;
+			if (asSecurityKey != null)
+			{
+				return asSecurityKey.SecurityKey;
+			}
 
 			Type extractorType = typeof(IEntityInformationExtractor<>);
 			Type genericExtractor = extractorType.MakeGenericType(entityType);
