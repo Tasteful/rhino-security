@@ -235,7 +235,7 @@ namespace Rhino.Security.Services
 				.CreateAlias("entityGroup.Entities", "entityKey", JoinType.LeftOuterJoin)
 				.SetProjection(Projections.Property("Allow"))
 				.Add(Restrictions.In("op.Name", operationNames))
-				.Add(Restrictions.Eq("User.Id", user.SecurityInfo.Identifier)
+				.Add(Restrictions.Eq("User", user) 
 				|| Subqueries.PropertyIn("UsersGroup.Id", 
 										 SecurityCriterions.AllGroups(user).SetProjection(Projections.Id())))
 				.Add(
