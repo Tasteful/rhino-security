@@ -1772,7 +1772,7 @@
             Gets the cache region name.
             </summary>
         </member>
-        <member name="M:NHibernate.Cache.QueryKey.#ctor(NHibernate.Engine.ISessionFactoryImplementor,NHibernate.SqlCommand.SqlString,NHibernate.Engine.QueryParameters,Iesi.Collections.ISet)">
+        <member name="M:NHibernate.Cache.QueryKey.#ctor(NHibernate.Engine.ISessionFactoryImplementor,NHibernate.SqlCommand.SqlString,NHibernate.Engine.QueryParameters,Iesi.Collections.Generic.ISet{NHibernate.Cache.FilterKey})">
             <summary>
             Initializes a new instance of the <see cref="T:NHibernate.Cache.QueryKey"/> class.
             </summary>
@@ -16565,7 +16565,7 @@
             if necessary
             </summary>
         </member>
-        <member name="M:NHibernate.Engine.BatchFetchQueue.GetCollectionBatch(NHibernate.Persister.Collection.ICollectionPersister,System.Object,System.Int32,NHibernate.EntityMode)">
+        <member name="M:NHibernate.Engine.BatchFetchQueue.GetCollectionBatch(NHibernate.Persister.Collection.ICollectionPersister,System.Object,System.Int32)">
             <summary>
             Get a batch of uninitialized collection keys for a given role
             </summary>
@@ -16575,7 +16575,7 @@
             <param name="entityMode">The entity mode.</param>
             <returns>an array of collection keys, of length batchSize (padded with nulls)</returns>
         </member>
-        <member name="M:NHibernate.Engine.BatchFetchQueue.GetEntityBatch(NHibernate.Persister.Entity.IEntityPersister,System.Object,System.Int32,NHibernate.EntityMode)">
+        <member name="M:NHibernate.Engine.BatchFetchQueue.GetEntityBatch(NHibernate.Persister.Entity.IEntityPersister,System.Object,System.Int32)">
             <summary>
             Get a batch of unloaded identifiers for this class, using a slightly
             complex algorithm that tries to grab keys registered immediately after
@@ -16584,7 +16584,6 @@
             <param name="persister">The persister for the entities being loaded.</param>
             <param name="id">The identifier of the entity currently demanding load.</param>
             <param name="batchSize">The maximum number of keys to return</param>
-            <param name="entityMode">The entity mode.</param>
             <returns>an array of identifiers, of length batchSize (possibly padded with nulls)</returns>
         </member>
         <member name="T:NHibernate.Engine.CascadePoint">
@@ -18111,6 +18110,11 @@
             Strongly-typed version of <see cref="M:NHibernate.Engine.ISessionImplementor.List(System.String,NHibernate.Engine.QueryParameters)"/>
             </summary>
         </member>
+        <member name="M:NHibernate.Engine.ISessionImplementor.List``1(NHibernate.IQueryExpression,NHibernate.Engine.QueryParameters)">
+            <summary>
+            Strongly-typed version of <see cref="M:NHibernate.Engine.ISessionImplementor.List(NHibernate.IQueryExpression,NHibernate.Engine.QueryParameters)"/>
+            </summary>
+        </member>
         <member name="M:NHibernate.Engine.ISessionImplementor.List``1(NHibernate.Impl.CriteriaImpl)">
             <summary>
             Strongly-typed version of <see cref="M:NHibernate.Engine.ISessionImplementor.List(NHibernate.Impl.CriteriaImpl)"/>
@@ -19273,7 +19277,7 @@
             Thus, this is a hook for HEM to affect this behavior.
             </remarks>
         </member>
-        <member name="M:NHibernate.Event.Default.DefaultDeleteEventListener.DeleteTransientEntity(NHibernate.Event.IEventSource,System.Object,System.Boolean,NHibernate.Persister.Entity.IEntityPersister,Iesi.Collections.ISet)">
+        <member name="M:NHibernate.Event.Default.DefaultDeleteEventListener.DeleteTransientEntity(NHibernate.Event.IEventSource,System.Object,System.Boolean,NHibernate.Persister.Entity.IEntityPersister,Iesi.Collections.Generic.ISet{System.Object})">
             <summary> 
             We encountered a delete request on a transient instance.
             <p/>
@@ -19290,7 +19294,7 @@
             A cache of already visited transient entities (to avoid infinite recursion).
             </param>
         </member>
-        <member name="M:NHibernate.Event.Default.DefaultDeleteEventListener.DeleteEntity(NHibernate.Event.IEventSource,System.Object,NHibernate.Engine.EntityEntry,System.Boolean,NHibernate.Persister.Entity.IEntityPersister,Iesi.Collections.ISet)">
+        <member name="M:NHibernate.Event.Default.DefaultDeleteEventListener.DeleteEntity(NHibernate.Event.IEventSource,System.Object,NHibernate.Engine.EntityEntry,System.Boolean,NHibernate.Persister.Entity.IEntityPersister,Iesi.Collections.Generic.ISet{System.Object})">
             <summary> 
             Perform the entity deletion.  Well, as with most operations, does not
             really perform it; just schedules an action/execution with the
@@ -20374,6 +20378,18 @@
             association is mapped with <tt>cascade="save-update"</tt>.
             </remarks>
         </member>
+        <member name="M:NHibernate.ISession.Save(System.String,System.Object,System.Object)">
+            <summary>
+            Persist the given transient instance, using the given identifier.
+            </summary>
+            <param name="entityName">The Entity name.</param>
+            <param name="obj">a transient instance of a persistent class </param>
+            <param name="id">An unused valid identifier</param>
+            <remarks>
+            This operation cascades to associated instances if the
+            association is mapped with <tt>cascade="save-update"</tt>.
+            </remarks>
+        </member>
         <member name="M:NHibernate.ISession.SaveOrUpdate(System.Object)">
             <summary>
             Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
@@ -20399,6 +20415,19 @@
             This operation cascades to associated instances if the association is mapped
             with <tt>cascade="save-update"</tt>.
             </remarks>
+        </member>
+        <member name="M:NHibernate.ISession.SaveOrUpdate(System.String,System.Object,System.Object)">
+            <summary>
+            Either <c>Save()</c> or <c>Update()</c> the given instance, depending upon the value of
+            its identifier property.
+            </summary>
+            <remarks>
+            By default the instance is always saved. This behaviour may be adjusted by specifying
+            an <c>unsaved-value</c> attribute of the identifier property mapping
+            </remarks>
+            <param name="entityName">The name of the entity</param>      
+            <param name="obj">A transient instance containing new or updated state</param>
+            <param name="id">Identifier of persistent instance</param>
         </member>
         <member name="M:NHibernate.ISession.Update(System.Object)">
             <summary>
@@ -20428,6 +20457,19 @@
             </summary>
             <param name="entityName">The Entity name.</param>
             <param name="obj">a detached instance containing updated state </param>
+            <remarks>
+            If there is a persistent instance with the same identifier,
+            an exception is thrown. This operation cascades to associated instances
+            if the association is mapped with <tt>cascade="save-update"</tt>.
+            </remarks>
+        </member>
+        <member name="M:NHibernate.ISession.Update(System.String,System.Object,System.Object)">
+            <summary>
+            Update the persistent instance associated with the given identifier.
+            </summary>
+            <param name="entityName">The Entity name.</param>
+            <param name="obj">a detached instance containing updated state </param>
+            <param name="id">Identifier of persistent instance</param>
             <remarks>
             If there is a persistent instance with the same identifier,
             an exception is thrown. This operation cascades to associated instances
@@ -20994,7 +21036,7 @@
         <member name="M:NHibernate.Event.IEventSource.SaveOrUpdateCopy(System.String,System.Object,System.Collections.IDictionary)">
             <summary> Cascade copy an entity instance</summary>
         </member>
-        <member name="M:NHibernate.Event.IEventSource.Delete(System.String,System.Object,System.Boolean,Iesi.Collections.ISet)">
+        <member name="M:NHibernate.Event.IEventSource.Delete(System.String,System.Object,System.Boolean,Iesi.Collections.Generic.ISet{System.Object})">
             <summary> Cascade delete an entity instance</summary>
         </member>
         <member name="P:NHibernate.Event.IEventSource.ActionQueue">
@@ -28384,7 +28426,7 @@
         <member name="M:NHibernate.Impl.SessionImpl.SaveOrUpdateCopy(System.String,System.Object,System.Collections.IDictionary)">
             <summary> Cascade copy an entity instance</summary>
         </member>
-        <member name="M:NHibernate.Impl.SessionImpl.Delete(System.String,System.Object,System.Boolean,Iesi.Collections.ISet)">
+        <member name="M:NHibernate.Impl.SessionImpl.Delete(System.String,System.Object,System.Boolean,Iesi.Collections.Generic.ISet{System.Object})">
             <summary> Cascade delete an entity instance</summary>
         </member>
         <member name="M:NHibernate.Impl.SessionImpl.AutoFlushIfRequired(Iesi.Collections.Generic.ISet{System.String})">
@@ -29081,13 +29123,24 @@
         <member name="M:NHibernate.Intercept.ILazyPropertyInitializer.InitializeLazyProperty(System.String,System.Object,NHibernate.Engine.ISessionImplementor)">
             <summary> Initialize the property, and return its new value</summary>
         </member>
-        <member name="T:NHibernate.Linq.Visitors.NhJoinClause">
+        <member name="T:NHibernate.Linq.Clauses.NhJoinClause">
             <summary>
             All joins are created as outer joins. An optimization in <see cref="T:NHibernate.Linq.Visitors.WhereJoinDetector"/> finds
-            joins that may be inner joined and calls <see cref="M:NHibernate.Linq.Visitors.NhJoinClause.MakeInner"/> on them.
+            joins that may be inner joined and calls <see cref="M:NHibernate.Linq.Clauses.NhJoinClause.MakeInner"/> on them.
             <see cref="T:NHibernate.Linq.Visitors.QueryModelVisitor"/>'s <see cref="M:NHibernate.Linq.Visitors.QueryModelVisitor.VisitAdditionalFromClause(Remotion.Linq.Clauses.AdditionalFromClause,Remotion.Linq.QueryModel,System.Int32)"/> will
             then emit the correct HQL join.
             </summary>
+        </member>
+        <member name="T:NHibernate.Linq.ExpressionTransformers.RemoveCharToIntConversion">
+            <summary>
+            Remove unwanted char-to-int conversions in binary expressions
+            </summary>
+            <remarks>
+            The LINQ expression tree may contain unwanted type conversions that were not in the original expression written by the user. For example,
+            <c>list.Where(someChar => someChar == 'A')</c> becomes the equivalent of <c>list.Where(someChar => (int)someChar == 55)</c> in the expression
+            tree. Converting this directly to a HQL/SQL statement would yield <code>CAST(x AS INT)</code> which does not work in MSSQLSERVER, and possibly
+            other databases.
+            </remarks> 
         </member>
         <member name="T:NHibernate.Linq.GroupBy.AggregatingGroupByRewriter">
             <summary>
@@ -29133,11 +29186,6 @@
                    emps = (from e2 in db.Employees where e2.Address.City == c.Address.City select e2).Count()
                };
             
-            </summary>
-        </member>
-        <member name="T:NHibernate.Linq.ReWriters.QueryReferenceExpressionFlattener">
-            <summary>
-            This re-writer is responsible to re-write a query without a body (no where-clause and so on).
             </summary>
         </member>
         <member name="T:NHibernate.Linq.ReWriters.ResultOperatorRewriter">
@@ -29446,11 +29494,6 @@
             <summary>
             Uniquely identifier a foreign key, so that we don't
             join it more than once, and create circularities
-            </summary>
-        </member>
-        <member name="M:NHibernate.Loader.Collection.BasicCollectionJoinWalker.GetJoinType(NHibernate.Type.IAssociationType,NHibernate.FetchMode,System.String,Iesi.Collections.ISet,System.String,System.String[],System.Boolean,System.Int32)">
-            <summary>
-            We can use an inner join for first many-to-many association
             </summary>
         </member>
         <member name="T:NHibernate.Loader.Collection.BasicCollectionLoader">
@@ -30832,7 +30875,7 @@
             </summary>
             <param name="column">The <see cref="T:NHibernate.Mapping.Column"/> to include in the Table.</param>
         </member>
-        <member name="M:NHibernate.Mapping.Table.GetIndex(System.String)">
+        <member name="M:NHibernate.Mapping.Table.GetOrCreateIndex(System.String)">
             <summary>
             Gets the <see cref="T:NHibernate.Mapping.Index"/> identified by the name.
             </summary>
@@ -30842,7 +30885,7 @@
             identified by the name does not exist then it is created.
             </returns>
         </member>
-        <member name="M:NHibernate.Mapping.Table.GetUniqueKey(System.String)">
+        <member name="M:NHibernate.Mapping.Table.GetOrCreateUniqueKey(System.String)">
             <summary>
             Gets the <see cref="T:NHibernate.Mapping.UniqueKey"/> identified by the name.
             </summary>
@@ -35919,7 +35962,7 @@
         </member>
         <member name="M:NHibernate.SqlCommand.Parameter.GenerateParameters(System.Int32)">
             <summary>
-            Generates an array of parameters for the given <see cref="T:NHibernate.SqlTypes.SqlType">SqlTypes</see>.
+            Generates an array of parameters.
             </summary>
             <param name="count">The number of parameters to generate.</param>
             <returns>An array of <see cref="T:NHibernate.SqlCommand.Parameter"/> objects</returns>
@@ -41515,6 +41558,7 @@
             <see cref="T:NHibernate.Impl.Printer"/>.
             </remarks>
         </member>
+        <!-- Badly formed XML comment ignored for member "T:NHibernate.Util.EnumeratorAdapter`1" -->
         <member name="T:NHibernate.Util.FilterHelper">
             <summary></summary>
         </member>
