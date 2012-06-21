@@ -1,13 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Resources;
-using System.Xml;
 using Rhino.Security.Impl.Linq;
-using Rhino.Security.Model;
-using log4net;
 using Microsoft.Practices.ServiceLocation;
 using NHibernate.Cfg;
 using NHibernate.Event;
@@ -59,7 +53,7 @@ namespace Rhino.Security
 
 			Type extractorType = typeof(IEntityInformationExtractor<>);
 			Type genericExtractor = extractorType.MakeGenericType(entityType);
-			object extractor = null;
+			object extractor;
 
 			try {
 				extractor = ServiceLocator.Current.GetInstance(genericExtractor);
