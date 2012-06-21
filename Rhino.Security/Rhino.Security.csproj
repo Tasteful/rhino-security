@@ -75,13 +75,15 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl\CollectionExtensions.cs" />
     <Compile Include="Impl\Guard.cs" />
     <Compile Include="Impl\MappingRewriting\SchemaChanger.cs" />
     <Compile Include="Impl\MappingRewriting\UserMapper.cs" />
-    <Compile Include="ISecurityKey.cs" />
+    <Compile Include="Impl\Linq\SecurityLinqToHqlGeneratorsRegistry.cs" />
+    <Compile Include="Impl\Linq\SecurityKeyExtractorGenerator.cs" />
     <Compile Include="Services\SecurityCriterions.cs" />
     <Compile Include="Services\AuthorizationRepository.cs" />
     <Compile Include="AuthorizationInformation.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="Model\Operation.cs" />
     <Compile Include="Model\Permission.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Impl\Linq\SecurityKeyExtractorExtenssions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

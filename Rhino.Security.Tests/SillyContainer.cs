@@ -18,13 +18,13 @@ namespace Rhino.Security.Tests
 												GetInstance<IAuthorizationRepository>(),
 												GetInstance<ISession>());
             if (serviceType == typeof(IAuthorizationRepository))
-                return new AuthorizationRepository(SessionProvider());
+				return new AuthorizationRepository(GetInstance<ISession>());
             if (serviceType == typeof(IPermissionsBuilderService))
-                return new PermissionsBuilderService(SessionProvider(), GetInstance<IAuthorizationRepository>());
+				return new PermissionsBuilderService(GetInstance<ISession>(), GetInstance<IAuthorizationRepository>());
             if (serviceType == typeof(IPermissionsService))
-                return new PermissionsService(GetInstance<IAuthorizationRepository>(), SessionProvider());
+				return new PermissionsService(GetInstance<IAuthorizationRepository>(), GetInstance<ISession>());
 			if (serviceType == typeof(IEntityInformationExtractor<Account>))
-				return new AccountInfromationExtractor(SessionProvider());
+				return new AccountInfromationExtractor(GetInstance<ISession>());
 			if (serviceType == typeof(ISession))
 				return SessionProvider();
 			throw new NotImplementedException();

@@ -1,14 +1,17 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.SqlCommand;
+using Rhino.Security.Impl.Linq;
 using Rhino.Security.Impl.Util;
 using Rhino.Security.Interfaces;
 using Rhino.Security.Model;
 using Rhino.Security.Properties;
+using Expression = NHibernate.Criterion.Expression;
 
 namespace Rhino.Security.Services
 {
@@ -83,28 +86,23 @@ namespace Rhino.Security.Services
 		/// <param name = "user">The user.</param>
 		/// <param name = "queryable">The query.</param>
 		/// <param name = "operation">The operation.</param>
-		public IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : ISecurityKey
+		public IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : class
 		{
 			var groups = authorizationRepository.GetAssociatedUsersGroupFor(user);
 			string[] operationNames = Strings.GetHierarchicalOperationNames(operation);
 
 			return queryable.Where(entity =>
 								_session.Query<Permission>()
-								.Where(permission =>
-									   operationNames.Contains(permission.Operation.Name)
-									   && (
-											permission.User == user
-											|| groups.Contains(permission.UsersGroup)
-									   )
-									   && (
-											permission.EntitySecurityKey == entity.SecurityKey
-											|| permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey == entity.SecurityKey)
+								.Where(permission => operationNames.Contains(permission.Operation.Name))
+								.Where(permission => permission.User == user || groups.Contains(permission.UsersGroup))
+								.Where(permission=>
+											permission.EntitySecurityKey.EqualsEntitySecurityKey(entity)
+											|| permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey.EqualsEntitySecurityKey(entity))
 											|| (
 												permission.EntitiesGroup == null
 												&& permission.EntitySecurityKey == null
 											   )
 										  )
-								)
 								.OrderByDescending(permission => permission.Level)
 								.ThenBy(permission => permission.Allow)
 								.Select(permission => permission.Allow)
@@ -131,27 +129,25 @@ namespace Rhino.Security.Services
 		///	are taken into account</param>
 		///<param name = "operation">The operation</param>
 		///<param name = "queryable">The query</param>
-		public IQueryable<T> AddPermissionsToQuery<T>(UsersGroup usersgroup, string operation, IQueryable<T> queryable) where T : ISecurityKey
+		public IQueryable<T> AddPermissionsToQuery<T>(UsersGroup usersgroup, string operation, IQueryable<T> queryable) where T : class
 		{
 			string[] operationNames = Strings.GetHierarchicalOperationNames(operation);
 			return queryable.Where(entity =>
-								_session.Query<Permission>()
-								.Where(permission =>
-									   operationNames.Contains(permission.Operation.Name)
-									   && permission.UsersGroup == usersgroup
-									   && (
-											permission.EntitySecurityKey == entity.SecurityKey
-											|| permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey == entity.SecurityKey)
-											|| (
-												permission.EntitiesGroup == null
-												&& permission.EntitySecurityKey == null
-											   )
-										  )
-								)
-								.OrderByDescending(permission => permission.Level)
-								.ThenBy(permission => permission.Allow)
-								.Select(permission => permission.Allow)
-								.FirstOrDefault() == true
+			                       _session.Query<Permission>()
+			                       	.Where(permission => operationNames.Contains(permission.Operation.Name))
+			                       	.Where(permission => permission.UsersGroup == usersgroup)
+			                       	.Where(permission =>
+			                       	       permission.EntitySecurityKey.EqualsEntitySecurityKey(entity)
+			                       	       || permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey.EqualsEntitySecurityKey(entity))
+			                       	       || (
+			                       	          	permission.EntitiesGroup == null
+			                       	          	&& permission.EntitySecurityKey == null
+			                       	          )
+			                       	)
+			                       	.OrderByDescending(permission => permission.Level)
+			                       	.ThenBy(permission => permission.Allow)
+			                       	.Select(permission => permission.Allow)
+			                       	.FirstOrDefault() == true
 				);
 		}
 

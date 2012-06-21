@@ -43,7 +43,7 @@ namespace Rhino.Security.Interfaces
 		/// <param name = "user">The user.</param>
 		/// <param name = "queryable">The query.</param>
 		/// <param name = "operation">The operation.</param>
-		IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : ISecurityKey;
+		IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : class;
 		
 		///<summary>
 		///	Adds the permissions to the criteria query for the given usersgroup
@@ -61,7 +61,7 @@ namespace Rhino.Security.Interfaces
 		///	are taken into account</param>
 		///<param name = "operation">The operation</param>
 		///<param name = "queryable">The query</param>
-		IQueryable<T> AddPermissionsToQuery<T>(UsersGroup usersgroup, string operation, IQueryable<T> queryable) where T : ISecurityKey;
+		IQueryable<T> AddPermissionsToQuery<T>(UsersGroup usersgroup, string operation, IQueryable<T> queryable) where T : class;
 
 		/// <summary>
 		/// 	Determines whether the specified user is allowed to perform the specified 
