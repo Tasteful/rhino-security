@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Microsoft.Practices.ServiceLocation;
 using Rhino.Security.Interfaces;
 using Rhino.Security.Model;
 using Xunit;
@@ -47,7 +46,7 @@ namespace Rhino.Security.Tests
             using (s2.BeginTransaction())
             {
                 SillyContainer.SessionProvider = () => s2;
-                var anotherAuthorizationService = ServiceLocator.Current.GetInstance<IAuthorizationService>();
+                var anotherAuthorizationService = DependencyResolver.GetInstance<IAuthorizationService>();
                 Assert.True(anotherAuthorizationService.IsAllowed(user, account, "/Account/Edit"));
 
                 s2.Transaction.Commit();
@@ -69,7 +68,7 @@ namespace Rhino.Security.Tests
             {
                 // should return true since it loads from cache
                 SillyContainer.SessionProvider = () => s3;
-                var anotherAuthorizationService = ServiceLocator.Current.GetInstance<IAuthorizationService>();
+                var anotherAuthorizationService = DependencyResolver.GetInstance<IAuthorizationService>();
                 Assert.True(anotherAuthorizationService.IsAllowed(user, account, "/Account/Edit"));
 
                 s3.Transaction.Commit();
@@ -90,7 +89,7 @@ namespace Rhino.Security.Tests
             using (var tx = s1.BeginTransaction())
             {
                 SillyContainer.SessionProvider = () => s1;
-                var anotherAuthorizationRepository = ServiceLocator.Current.GetInstance<IAuthorizationRepository>();
+                var anotherAuthorizationRepository = DependencyResolver.GetInstance<IAuthorizationRepository>();
                 UsersGroup[] initialGroups = anotherAuthorizationRepository.GetAssociatedUsersGroupFor(user);
                 Assert.Equal(2, initialGroups.Length);
                 Assert.Equal("Administrators", initialGroups[0].Name);
@@ -102,7 +101,7 @@ namespace Rhino.Security.Tests
             using (var tx = s2.BeginTransaction())
             {
                 SillyContainer.SessionProvider = () => s2;
-                var anotherAuthorizationRepository = ServiceLocator.Current.GetInstance<IAuthorizationRepository>();
+                var anotherAuthorizationRepository = DependencyResolver.GetInstance<IAuthorizationRepository>();
                 anotherAuthorizationRepository.DetachUserFromGroup(user, "Users");
                 tx.Commit();
             }
@@ -111,7 +110,7 @@ namespace Rhino.Security.Tests
             using (var tx = s3.BeginTransaction())
             {
                 SillyContainer.SessionProvider = () => s3;
-                var anotherAuthorizationRepository = ServiceLocator.Current.GetInstance<IAuthorizationRepository>();
+                var anotherAuthorizationRepository = DependencyResolver.GetInstance<IAuthorizationRepository>();
                 UsersGroup[] newGroups = anotherAuthorizationRepository.GetAssociatedUsersGroupFor(user);
                 Assert.Equal(1, newGroups.Length);
                 Assert.Equal("Administrators", newGroups[0].Name);

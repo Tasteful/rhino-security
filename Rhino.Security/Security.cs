@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Rhino.Security.Impl.Linq;
-using Microsoft.Practices.ServiceLocation;
 using NHibernate.Cfg;
 using NHibernate.Event;
 using Rhino.Security.Impl;
@@ -33,7 +32,7 @@ namespace Rhino.Security
 		{
 			Guard.Against<ArgumentNullException>(entity == null, "entity");
 
-			var extractor = ServiceLocator.Current.GetInstance<IEntityInformationExtractor<TEntity>>();
+			var extractor = DependencyResolver.GetInstance<IEntityInformationExtractor<TEntity>>();
 			return extractor.GetSecurityKeyFor(entity);
 		}
 
@@ -56,9 +55,9 @@ namespace Rhino.Security
 			object extractor;
 
 			try {
-				extractor = ServiceLocator.Current.GetInstance(genericExtractor);
+                extractor = DependencyResolver.GetInstance(genericExtractor);
 			}
-			catch (ActivationException) {
+			catch (DependencyResolverException) {
 				// If no IEntityInformationExtractor is registered then the entity isn't 
 				// secured by Rhino.Security. Ignore the error and return an empty Guid.
 				return Guid.Empty;
@@ -77,7 +76,7 @@ namespace Rhino.Security
 		/// <returns></returns>
 		public static string GetDescription<TEntity>(TEntity entity) where TEntity : class
 		{
-            IEntityInformationExtractor<TEntity> extractor = ServiceLocator.Current.GetInstance<IEntityInformationExtractor<TEntity>>();
+            IEntityInformationExtractor<TEntity> extractor = DependencyResolver.GetInstance<IEntityInformationExtractor<TEntity>>();
 			return extractor.GetDescription(ExtractKey(entity));
 		}
 
@@ -112,7 +111,7 @@ namespace Rhino.Security
 
 		internal static string GetSecurityKeyPropertyInternal<TEntity>()
 		{
-            return ServiceLocator.Current.GetInstance<IEntityInformationExtractor<TEntity>>().SecurityKeyPropertyName;
+            return DependencyResolver.GetInstance<IEntityInformationExtractor<TEntity>>().SecurityKeyPropertyName;
 		}
 
 		///<summary>

@@ -1,8 +1,7 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using CommonServiceLocator.WindsorAdapter;
-using Microsoft.Practices.ServiceLocation;
 using Rhino.Security.Interfaces;
 using Rhino.Security.Services;
 
@@ -35,7 +34,17 @@ namespace Rhino.Security.Windsor
 					.LifeStyle.Transient
 				);
 
-			ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
+			DependencyResolver.SetDependencyResolver(type =>
+			    {
+			        try
+			        {
+			            return container.Resolve(type);
+			        }
+			        catch (Exception e)
+			        {
+			            throw new DependencyResolverException(e.Message, e);
+			        }
+			    });
 		}
 	}
 }

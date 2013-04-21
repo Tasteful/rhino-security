@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Practices.ServiceLocation;
 using Rhino.Security.Interfaces;
 using Xunit;
 using Rhino.Security.Model;
@@ -44,10 +43,10 @@ namespace Rhino.Security.Tests
         [Fact]
         public void GetUsersByUsersGroup()
         {
-            authorizationService = ServiceLocator.Current.GetInstance<IAuthorizationService>();
-            permissionService = ServiceLocator.Current.GetInstance<IPermissionsService>();
-            permissionsBuilderService = ServiceLocator.Current.GetInstance<IPermissionsBuilderService>();
-            authorizationRepository = ServiceLocator.Current.GetInstance<IAuthorizationRepository>();
+            authorizationService = DependencyResolver.GetInstance<IAuthorizationService>();
+            permissionService = DependencyResolver.GetInstance<IPermissionsService>();
+            permissionsBuilderService = DependencyResolver.GetInstance<IPermissionsBuilderService>();
+            authorizationRepository = DependencyResolver.GetInstance<IAuthorizationRepository>();
             
             User marcus = session.Get<User>(Convert.ToInt64(idMarcus));
             UsersGroup[] marcusGroups = authorizationRepository.GetAssociatedUsersGroupFor(marcus);

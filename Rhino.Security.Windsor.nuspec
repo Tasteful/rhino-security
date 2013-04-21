@@ -13,7 +13,6 @@
 		<dependencies>
 			<dependency id="NHibernate" version="3.2.0.4000" />
 			<dependency id="Rhino.Security" version="{Version}" />
-			<dependency id="CommonServiceLocator.WindsorAdapter" version="1.0" />
 		</dependencies>
 	</metadata>
 </package>

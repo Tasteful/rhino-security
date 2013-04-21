@@ -1,38 +1,31 @@
 using System;
-using System.Collections.Generic;
-using Microsoft.Practices.ServiceLocation;
 using NHibernate;
 using Rhino.Security.Interfaces;
 using Rhino.Security.Services;
 
 namespace Rhino.Security.Tests
 {
-    public class SillyContainer : ServiceLocatorImplBase
+    public static class SillyContainer
     {
         public static Func<ISession> SessionProvider;
 
-    	protected override object DoGetInstance(Type serviceType, string key)
+    	public static object GetInstance(Type serviceType)
         {
             if (serviceType == typeof(IAuthorizationService))
-                return new AuthorizationService(GetInstance<IPermissionsService>(),
-												GetInstance<IAuthorizationRepository>(),
-												GetInstance<ISession>());
+                return new AuthorizationService(DependencyResolver.GetInstance<IPermissionsService>(),
+                                                DependencyResolver.GetInstance<IAuthorizationRepository>(),
+                                                DependencyResolver.GetInstance<ISession>());
             if (serviceType == typeof(IAuthorizationRepository))
-				return new AuthorizationRepository(GetInstance<ISession>());
+                return new AuthorizationRepository(DependencyResolver.GetInstance<ISession>());
             if (serviceType == typeof(IPermissionsBuilderService))
-				return new PermissionsBuilderService(GetInstance<ISession>(), GetInstance<IAuthorizationRepository>());
+                return new PermissionsBuilderService(DependencyResolver.GetInstance<ISession>(), DependencyResolver.GetInstance<IAuthorizationRepository>());
             if (serviceType == typeof(IPermissionsService))
-				return new PermissionsService(GetInstance<IAuthorizationRepository>(), GetInstance<ISession>());
+                return new PermissionsService(DependencyResolver.GetInstance<IAuthorizationRepository>(), DependencyResolver.GetInstance<ISession>());
 			if (serviceType == typeof(IEntityInformationExtractor<Account>))
-				return new AccountInfromationExtractor(GetInstance<ISession>());
+                return new AccountInfromationExtractor(DependencyResolver.GetInstance<ISession>());
 			if (serviceType == typeof(ISession))
 				return SessionProvider();
-			throw new NotImplementedException();
-        }
-
-        protected override IEnumerable<object> DoGetAllInstances(Type serviceType)
-        {
-            throw new NotImplementedException();
+            throw new DependencyResolverException();
         }
     }
 }

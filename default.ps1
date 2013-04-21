@@ -4,7 +4,7 @@ properties {
   $build_dir = "$base_dir\build" 
   $buildartifacts_dir = "$build_dir\" 
   $sln_file = "$base_dir\Rhino.Security.sln" 
-  $version = "1.3.8.0"
+  $version = "1.3.9.0"
   $humanReadableversion = "1.3"
   $tools_dir = "$base_dir\Tools"
   $release_dir = "$base_dir\Release"
@@ -25,7 +25,7 @@ properties {
   $NugetCoreOut = Join-Path $NuGetPackDir $NuGetPackageName
   $NugetWindOut = Join-Path $NuGetPackDir $NuGetPackageNameWindsor
 } 
-
+$framework = '4.0'
 include .\psake_ext.ps1
 # include .\SharedLibs\build-ext\x64detection.ps1
 	
@@ -45,7 +45,7 @@ task Init -depends Clean {
 		-company "Hibernating Rhinos" `
 		-product "Rhino Security $version" `
 		-version $version `
-		-copyright "Hibernating Rhinos & Ayende Rahien 2004 - 2009 & Contributors 2010-2011"
+		-copyright "Hibernating Rhinos & Ayende Rahien 2004 - 2009 & Contributors 2010-2013"
 		
 	Generate-Assembly-Info `
 		-file "$base_dir\Rhino.Security.Tests\Properties\AssemblyInfo.cs" `
@@ -55,7 +55,7 @@ task Init -depends Clean {
 		-product "Rhino Security Tests $version" `
 		-version $version `
 		-clsCompliant "false" `
-		-copyright "Hibernating Rhinos & Ayende Rahien 2004 - 2009"
+		-copyright "Hibernating Rhinos & Ayende Rahien 2004 - 2013"
 		
 	Generate-Assembly-Info `
 		-file "$base_dir\Rhino.Security.Windsor\Properties\AssemblyInfo.cs" `
@@ -65,7 +65,7 @@ task Init -depends Clean {
 		-product "Rhino Security Windsor $version" `
 		-version $version `
 		-clsCompliant "false" `
-		-copyright "Interfleet Technology AB 2011"
+		-copyright "Interfleet Technology AB 2013"
 		
 	Generate-Assembly-Info `
 		-file "$base_dir\Rhino.Security.ActiveRecord\Properties\AssemblyInfo.cs" `
@@ -74,7 +74,7 @@ task Init -depends Clean {
 		-company "Hibernating Rhinos" `
 		-product "Rhino Security $version" `
 		-version $version `
-		-copyright "Hibernating Rhinos & Ayende Rahien 2004 - 2009"
+		-copyright "Hibernating Rhinos & Ayende Rahien 2004 - 2013"
 		
 	new-item $release_dir -itemType directory 
 	new-item $buildartifacts_dir -itemType directory 

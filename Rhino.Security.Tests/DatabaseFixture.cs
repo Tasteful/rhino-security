@@ -1,7 +1,6 @@
 using System;
 using System.Data.SQLite;
 using HibernatingRhinos.Profiler.Appender.NHibernate;
-using Microsoft.Practices.ServiceLocation;
 using NHibernate;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -31,8 +30,7 @@ namespace Rhino.Security.Tests
 			BeforeSetup();
 
 			SillyContainer.SessionProvider = (() => session);
-			var sillyContainer = new SillyContainer();
-			ServiceLocator.SetLocatorProvider(() => sillyContainer);
+            DependencyResolver.SetDependencyResolver(SillyContainer.GetInstance);
 
 			Assert.NotNull(typeof (SQLiteConnection));
 
@@ -94,10 +92,10 @@ namespace Rhino.Security.Tests
 			session.Save(user);
 			session.Save(account);
 
-			authorizationService = ServiceLocator.Current.GetInstance<IAuthorizationService>();
-			permissionService = ServiceLocator.Current.GetInstance<IPermissionsService>();
-			permissionsBuilderService = ServiceLocator.Current.GetInstance<IPermissionsBuilderService>();
-			authorizationRepository = ServiceLocator.Current.GetInstance<IAuthorizationRepository>();
+            authorizationService = DependencyResolver.GetInstance<IAuthorizationService>();
+            permissionService = DependencyResolver.GetInstance<IPermissionsService>();
+            permissionsBuilderService = DependencyResolver.GetInstance<IPermissionsBuilderService>();
+            authorizationRepository = DependencyResolver.GetInstance<IAuthorizationRepository>();
 
 			authorizationRepository.CreateUsersGroup("Administrators");
 			authorizationRepository.CreateEntitiesGroup("Important Accounts");
