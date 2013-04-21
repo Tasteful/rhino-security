@@ -88,13 +88,16 @@ namespace Rhino.Security.Services
 		/// <param name = "operation">The operation.</param>
 		public IQueryable<T> AddPermissionsToQuery<T>(IUser user, string operation, IQueryable<T> queryable) where T : class
 		{
-			var groups = authorizationRepository.GetAssociatedUsersGroupFor(user);
 			string[] operationNames = Strings.GetHierarchicalOperationNames(operation);
 
 			return queryable.Where(entity =>
 								_session.Query<Permission>()
 								.Where(permission => operationNames.Contains(permission.Operation.Name))
-								.Where(permission => permission.User == user || groups.Contains(permission.UsersGroup))
+                                .Where(permission => 
+                                    permission.User == user 
+                                    || _session.Query<UsersGroup>().Where(group => group.Users.Contains(user) 
+                                        || group.AllChildren.Any(child => child.Users.Contains(user)))
+                                        .Contains(permission.UsersGroup))
 								.Where(permission=>
 											permission.EntitySecurityKey.EqualsEntitySecurityKey(entity)
 											|| permission.EntitiesGroup.Entities.Any(x => x.EntitySecurityKey.EqualsEntitySecurityKey(entity))
