@@ -154,6 +154,86 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		public Permission[] GetSpecificGlobalPermissionsFor(IUser user, string operationName)
+		{
+			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
+				.Add(Expression.Eq("User", user))
+				.Add(Expression.IsNull("UsersGroup"))
+				.Add(Expression.IsNull("EntitiesGroup"))
+				.Add(Expression.IsNull("EntitySecurityKey"))
+				.CreateAlias("Operation", "op")
+				.Add(Expression.Eq("op.Name", operationName));
+
+			return FindResults(criteria);
+		}
+
+		public Permission[] GetSpecificGlobalPermissionsFor(UsersGroup usersGroup, string operationName)
+		{
+			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
+				.Add(Expression.IsNull("User"))
+				.Add(Expression.Eq("UsersGroup", usersGroup))
+				.Add(Expression.IsNull("EntitiesGroup"))
+				.Add(Expression.IsNull("EntitySecurityKey"))
+				.CreateAlias("Operation", "op")
+				.Add(Expression.Eq("op.Name", operationName));
+
+			return FindResults(criteria);
+		}
+
+		public Permission[] GetSpecificPermissionsFor<TEntity>(IUser user, TEntity entity, string operationName) where TEntity : class
+		{
+			Guid key = Security.ExtractKey(entity);
+			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
+				.Add(Expression.Eq("User", user))
+				.Add(Expression.IsNull("UsersGroup"))
+				.Add(Expression.IsNull("EntitiesGroup"))
+				.Add(Expression.Eq("EntitySecurityKey", key))
+				.CreateAlias("Operation", "op")
+				.Add(Expression.Eq("op.Name", operationName));
+
+			return FindResults(criteria);
+		}
+
+		public Permission[] GetSpecificPermissionsFor<TEntity>(UsersGroup usersGroup, TEntity entity, string operationName) where TEntity : class
+		{
+			Guid key = Security.ExtractKey(entity);
+			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
+				.Add(Expression.IsNull("User"))
+				.Add(Expression.Eq("UsersGroup", usersGroup))
+				.Add(Expression.IsNull("EntitiesGroup"))
+				.Add(Expression.Eq("EntitySecurityKey", key))
+				.CreateAlias("Operation", "op")
+				.Add(Expression.Eq("op.Name", operationName));
+
+			return FindResults(criteria);
+		}
+
+		public Permission[] GetSpecificPermissionsFor(IUser user, EntitiesGroup entitiesGroup, string operationName)
+		{
+			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
+				.Add(Expression.Eq("User", user))
+				.Add(Expression.IsNull("UsersGroup"))
+				.Add(Expression.Eq("EntitiesGroup", entitiesGroup))
+				.Add(Expression.IsNull("EntitySecurityKey"))
+				.CreateAlias("Operation", "op")
+				.Add(Expression.Eq("op.Name", operationName));
+
+			return FindResults(criteria);
+		}
+
+		public Permission[] GetSpecificPermissionsFor(UsersGroup usersGroup, EntitiesGroup entitiesGroup, string operationName)
+		{
+			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
+				.Add(Expression.IsNull("User"))
+				.Add(Expression.Eq("UsersGroup", usersGroup))
+				.Add(Expression.Eq("EntitiesGroup", entitiesGroup))
+				.Add(Expression.IsNull("EntitySecurityKey"))
+				.CreateAlias("Operation", "op")
+				.Add(Expression.Eq("op.Name", operationName));
+
+			return FindResults(criteria);
+		}
+
 		#endregion
 
 		private Permission[] FindResults(DetachedCriteria criteria)
