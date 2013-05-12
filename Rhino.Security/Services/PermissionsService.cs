@@ -154,6 +154,12 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		/// <summary>
+		/// Get the specific global permissions for the specified user.
+		/// </summary>
+		/// <param name="user">The user.</param>
+		/// <param name="operationName">Name of the operation.</param>
+		/// <returns>Permission[][].</returns>
 		public Permission[] GetSpecificGlobalPermissionsFor(IUser user, string operationName)
 		{
 			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
@@ -167,6 +173,12 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		/// <summary>
+		/// Get the specific global permissions for the specified users group.
+		/// </summary>
+		/// <param name="usersGroup">The users group.</param>
+		/// <param name="operationName">Name of the operation.</param>
+		/// <returns>Permission[][].</returns>
 		public Permission[] GetSpecificGlobalPermissionsFor(UsersGroup usersGroup, string operationName)
 		{
 			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
@@ -180,6 +192,14 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		/// <summary>
+		/// Get the specific permissions for the specified entity.
+		/// </summary>
+		/// <typeparam name="TEntity">The type of the T entity.</typeparam>
+		/// <param name="user">The user.</param>
+		/// <param name="entity">The entity.</param>
+		/// <param name="operationName">Name of the operation.</param>
+		/// <returns>Permission[][].</returns>
 		public Permission[] GetSpecificPermissionsFor<TEntity>(IUser user, TEntity entity, string operationName) where TEntity : class
 		{
 			Guid key = Security.ExtractKey(entity);
@@ -194,6 +214,14 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		/// <summary>
+		/// Get the specific permissions for the specified entity.
+		/// </summary>
+		/// <typeparam name="TEntity">The type of the T entity.</typeparam>
+		/// <param name="usersGroup">The users group.</param>
+		/// <param name="entity">The entity.</param>
+		/// <param name="operationName">Name of the operation.</param>
+		/// <returns>Permission[][].</returns>
 		public Permission[] GetSpecificPermissionsFor<TEntity>(UsersGroup usersGroup, TEntity entity, string operationName) where TEntity : class
 		{
 			Guid key = Security.ExtractKey(entity);
@@ -208,6 +236,13 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		/// <summary>
+		/// Get the specific permissions for the specified entity.
+		/// </summary>
+		/// <param name="user">The user.</param>
+		/// <param name="entitiesGroup">The entities group.</param>
+		/// <param name="operationName">Name of the operation.</param>
+		/// <returns>Permission[][].</returns>
 		public Permission[] GetSpecificPermissionsFor(IUser user, EntitiesGroup entitiesGroup, string operationName)
 		{
 			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
@@ -221,6 +256,13 @@ namespace Rhino.Security.Services
 			return FindResults(criteria);
 		}
 
+		/// <summary>
+		/// Get the specific permissions for the specified entity.
+		/// </summary>
+		/// <param name="usersGroup">The users group.</param>
+		/// <param name="entitiesGroup">The entities group.</param>
+		/// <param name="operationName">Name of the operation.</param>
+		/// <returns>Permission[][].</returns>
 		public Permission[] GetSpecificPermissionsFor(UsersGroup usersGroup, EntitiesGroup entitiesGroup, string operationName)
 		{
 			DetachedCriteria criteria = DetachedCriteria.For<Permission>()
